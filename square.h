@@ -16,9 +16,12 @@ class Square : public QObject, public QGraphicsItem {
 public:
     Square(QColor color, const int x, const int y, int id);
 
-    //int get_location() { return location_; };
+    int get_location() { return location_; };
+
+    int get_id() const {return id_;};
 
     //get_value() // type of value/?
+
     QRectF boundingRect() const override;
     QPainterPath shape() const override;
 
@@ -36,10 +39,9 @@ protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
 
 private:
-    //int location_;
+    int location_;
 
     int id_;
-
 
     int x_;
 

@@ -8,6 +8,15 @@ Square::Square(QColor color, const int x, const int y, int id)
     id_ = id;
 }
 
+/**
+    basic func to create rect of ell
+    @return void
+*/
+QRectF Square::boundingRect() const
+{
+    return QRectF(x_, y_, width_, width_);
+}
+
 QPainterPath Square::shape() const
 {
     QPainterPath path;
@@ -46,5 +55,6 @@ void Square::mousePressEvent(QGraphicsSceneMouseEvent *event)
 
 
 bool operator==(const Square &first, const Square &other) {
-  return first.id_ == other.id_;
+    return true;
+    //return first.get_id() == other.get_id();
 }

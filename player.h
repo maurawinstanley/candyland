@@ -1,7 +1,7 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 #include "square.h"
-#define NULL 0
+
 enum Powerup {AdvanceOne, AdvanceTwo, AdvanceSquare, None};
 
 class Player
@@ -9,9 +9,9 @@ class Player
 public:
     Player();
 
-    Square get_location() { return location_; };
+    Square* get_location() { return location_; };
 
-    void set_location(Square loc) { location_ = loc; };
+    void set_location(Square* loc) { location_ = loc; };
 
     int get_wins() { return wins_; };
 
@@ -31,7 +31,7 @@ public:
 
 
 private:
-    Square location_;
+    Square* location_;
 
     int wins_;
 
@@ -39,5 +39,18 @@ private:
 
 
 };
+
+
+
+class PlayerFactory {
+public:
+
+
+    static Player* createHuman();
+
+    static Player* createCpu();
+
+};
+
 
 #endif // PLAYER_H
