@@ -7,7 +7,7 @@ enum Powerup {AdvanceOne, AdvanceTwo, AdvanceSquare, None};
 class Player
 {
 public:
-    Player();
+    Player(int id);
 
     Square* get_location() { return location_; };
 
@@ -37,6 +37,8 @@ private:
 
     Powerup powerup_;
 
+    int id_;
+
 
 };
 
@@ -46,9 +48,9 @@ class PlayerFactory {
 public:
 
 
-    static Player* createHuman();
+    static Player* createHuman(int id);
 
-    static Player* createCpu();
+    static Player* createCpu(int id);
 
 };
 

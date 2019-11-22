@@ -8,7 +8,7 @@ QT       += core gui
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = candyland
+TARGET = boardwindow
 TEMPLATE = app
 
 # The following define makes your compiler emit warnings if you use
@@ -28,15 +28,19 @@ SOURCES += \
         main.cpp \
         boardwindow.cpp \
     player.cpp \
-    square.cpp
+    square.cpp \
+    popupwindow.cpp
+
 
 HEADERS += \
         boardwindow.h \
     player.h \
-    square.h
+    square.h \
+    popupwindow.h
 
 FORMS += \
-        boardwindow.ui
+        boardwindow.ui \
+    popupwindow.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
