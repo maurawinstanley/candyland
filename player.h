@@ -2,8 +2,6 @@
 #define PLAYER_H
 #include "square.h"
 
-enum Powerup {AdvanceOne, AdvanceTwo, AdvanceSquare, None};
-
 class Player
 {
 public:

@@ -22,6 +22,8 @@ public:
 
     void NewGame(int num_players);
 
+    void SetUpBoard();
+
     Card DrawCard();
 
     void TakeTurn();
@@ -37,6 +39,8 @@ private slots:
 
 private:
     Ui::BoardWindow *ui;
+    QGraphicsScene *scene;
+    QGraphicsScene *graph_scene;
     Popupwindow *popup;
 
     std::vector<Player*> players_;

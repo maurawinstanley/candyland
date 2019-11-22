@@ -9,12 +9,15 @@
 #include <QGraphicsItem>
 
 #include <string>
+
+enum Powerup {Double, PlusOne, Backward, None};
+
 class Square : public QObject, public QGraphicsItem {
 
     Q_OBJECT
 
 public:
-    Square(QColor color, const int x, const int y, int id);
+    Square(const int x, const int y, int id);
 
     int get_location() { return location_; };
 
@@ -49,9 +52,17 @@ private:
 
     QColor color_;
 
-    static const int width_ = 40;
+    static const int width_ = 75;
 
     friend bool operator==(const Square &first, const Square &other);
+};
+
+
+class PowerSquare: public Square {
+public:
+    PowerSquare(const int x, const int y, int id);
+private:
+    Powerup powerup_;
 };
 
 #endif // SQUARE_H
