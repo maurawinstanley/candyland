@@ -26,7 +26,9 @@ public:
 
     Card DrawCard();
 
-    void TakeTurn();
+    void TakeTurn(Player *p);
+
+    Square* GetNextSquare(Square* previous_square, QColor color_needed);
 
 private slots:
     void on_pushButton_clicked();
@@ -35,7 +37,9 @@ private slots:
     void changeWindow();
 
 
+    void on_powerup_button_clicked(Player *p);
 
+    void on_drawcard_button_clicked(Player *p);
 
 private:
     Ui::BoardWindow *ui;
@@ -44,6 +48,8 @@ private:
     Popupwindow *popup;
 
     std::vector<Player*> players_;
+    std::vector<Square*> squares_;
+
 };
 
 #endif // BOARDWINDOW_H

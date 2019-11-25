@@ -19,7 +19,7 @@ class Square : public QObject, public QGraphicsItem {
 public:
     Square(const int x, const int y, int id);
 
-    int get_location() { return location_; };
+    std::pair<int, int> get_location();
 
     int get_id() const {return id_;};
 
@@ -28,7 +28,7 @@ public:
     QRectF boundingRect() const override;
     QPainterPath shape() const override;
 
-
+    QColor get_color() { return color_; };
 
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *item, QWidget *widget) override;
 
@@ -55,6 +55,7 @@ private:
     static const int width_ = 75;
 
     friend bool operator==(const Square &first, const Square &other);
+
 };
 
 

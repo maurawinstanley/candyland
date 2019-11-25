@@ -92,3 +92,17 @@ bool operator==(const Square &first, const Square &other) {
     return true;
     //return first.get_id() == other.get_id();
 }
+
+
+
+
+std::pair<int, int>Square:: get_location(){
+    std::pair<int, int> ret;
+    ret.first = x_;
+    ret.second = y_;
+    return ret;
+
+
+}
+
+
