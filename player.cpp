@@ -7,6 +7,7 @@ Player::Player(int id, bool is_human)
     is_human_ = is_human;
     x_ = 675;
     y_ = 300;
+    wins_ = 0;
 }
 
 Player* PlayerFactory::createCpu(int id) {

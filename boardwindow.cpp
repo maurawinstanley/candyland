@@ -20,6 +20,8 @@ BoardWindow::BoardWindow(QWidget *parent) :
 
     popup = new Popupwindow();
     connect(popup, SIGNAL(finish_clicked()), this, SLOT(on_finish_clicked()));
+    ui->drawcard_button->setEnabled(false);
+    ui->powerup_button->setEnabled(false);
 
 }
 
@@ -60,6 +62,7 @@ void BoardWindow::NewGame(int num_humans){
             qDebug()<<"new cpu";
         }
     }
+    ui->drawcard_button->setEnabled(true);
     std::string s = "PLAYER 1, it is your turn to draw a card.";
     ui->turnLabel->setText(s.c_str());
 
@@ -140,8 +143,8 @@ void BoardWindow::changeWindow()
 }
 
 
-void BoardWindow::on_powerup_button_clicked()
-{ //use the power up
+void BoardWindow::on_powerup_button_clicked() {
+    //use the power up
     qDebug() << "in the power up button function";
 //    Powerup p_powerup = p->get_powerup();
 //    if (p_powerup==Powerup::None){
@@ -151,8 +154,8 @@ void BoardWindow::on_powerup_button_clicked()
 //    }
 }
 
-void BoardWindow::on_drawcard_button_clicked()
-{ //draw card
+void BoardWindow::on_drawcard_button_clicked() {
+    //draw card
     Card current_card;
     QColor color_needed;
     std::string card_string = "PLAYER " + std::to_string(active_player_ + 1) + " drew a ";
@@ -161,63 +164,62 @@ void BoardWindow::on_drawcard_button_clicked()
         card_string += "Blue";
         current_card =  Card::Blue;
         color_needed = QColor(244, 154, 194);
-    }
-    if (num == 1){
+    } else if (num == 1){
         card_string += "Green";
         current_card = Card::Green;
         color_needed = QColor(154, 239, 244);
-    }
-    if (num == 2){
+    } else if (num == 2){
         card_string += "Red";
         current_card = Card::Red;
         color_needed = QColor(154, 244, 204);
-    }
-    if (num == 3){
+    } else if (num == 3){
         card_string += "Yellow";
         current_card = Card::Yellow;
         color_needed = QColor(239, 115, 108);
-    }
-    if (num == 4){
+    } else {
         card_string += "Pink";
         current_card = Card::Pink;
         color_needed = QColor(239, 244, 154);
     }
 
-
-
     Player* p = players_[active_player_];
     Square *current_square = p->get_location();
     Square *next_square = GetNextSquare(current_square, color_needed);
-
-    card_string += " card. You have advanced " + std::to_string(next_square->get_id() - current_square->get_id()) + " spaces.";
-    ui->drawCardLabel->setText(card_string.c_str());
-    scene->update();
     if (next_square->get_id()!= -1){
-        //then it's a valid square so move the player to that location
-        qDebug() << "moviing player";
+        // then it's a valid square so move the player to that location
         scene->removeItem(p);
         p->set_location(next_square);
         scene->addItem(p);
-    } else {
-        qDebug() << "next square id invalid";
+        card_string += " card and advanced " + std::to_string(next_square->get_id() - current_square->get_id()) + " spaces.";
+    } else  {
+        card_string += " card. There are none left so you have not moved.";
     }
-    if (active_player_ == 3) {
-        active_player_ = 0;
-    } else {
-        active_player_++;
-    }
-    std::string turn_string = "PLAYER " + std::to_string(active_player_ + 1) + ", it is your turn to draw a card.";
-    ui->turnLabel->setText(turn_string.c_str());
 
+    ui->drawCardLabel->setText(card_string.c_str());
+
+    // check for winner
+    if (next_square == squares_[squares_.size()-1]){
+        ui->drawcard_button->setEnabled(false);
+        ui->powerup_button->setEnabled(false);
+        std::string turn_string = "CONGRATIONS PLAYER " + std::to_string(active_player_ + 1) + ", YOU WIN! \n\n Click New Game to play again.";
+        ui->turnLabel->setText(turn_string.c_str());
+        players_[active_player_]->IncrementWins();
+    } else {
+        // update whose turn it is
+        if (active_player_ == 3) {
+            active_player_ = 0;
+        } else {
+            active_player_++;
+        }
+        std::string turn_string = "PLAYER " + std::to_string(active_player_ + 1) + ", it is your turn to draw a card.";
+        ui->turnLabel->setText(turn_string.c_str());
+    }
 }
 
 Square* BoardWindow::GetNextSquare(Square* previous_square, QColor color_needed){ //gets the next square of the card's color
     int square_id = previous_square->get_id();
     int ctr = square_id;
-    qDebug() << "Square id:" << square_id;
-    qDebug() << "Needed color:" << color_needed;
     for (ctr; ctr < squares_.size(); ctr++){
-        qDebug() << ctr << ", " << squares_[ctr]->get_color();
         if (squares_[ctr]->get_color() == color_needed){
             return squares_[ctr+1];
         }

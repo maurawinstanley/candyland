@@ -86,7 +86,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>Press the New Game button to begin playing.</string>
+     <string>Click New Game to begin playing.</string>
     </property>
    </widget>
   </widget>
