@@ -23,6 +23,9 @@ public:
 
     int get_id() const {return id_;};
 
+    int get_x() const {return x_;};
+    int get_y() const {return y_;};
+
     //get_value() // type of value/?
 
     QRectF boundingRect() const override;

@@ -34,12 +34,12 @@ private slots:
     void on_pushButton_clicked();
 
     void on_finish_clicked();
+
     void changeWindow();
 
+    void on_powerup_button_clicked();
 
-    void on_powerup_button_clicked(Player *p);
-
-    void on_drawcard_button_clicked(Player *p);
+    void on_drawcard_button_clicked();
 
 private:
     Ui::BoardWindow *ui;
@@ -49,7 +49,7 @@ private:
 
     std::vector<Player*> players_;
     std::vector<Square*> squares_;
-
+    int active_player_;
 };
 
 #endif // BOARDWINDOW_H

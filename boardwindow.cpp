@@ -2,6 +2,7 @@
 #include "ui_boardwindow.h"
 #include "square.h"
 #include <QDebug>
+#include <string>
 
 
 
@@ -35,30 +36,27 @@ void BoardWindow::on_pushButton_clicked()
 
 }
 
-void BoardWindow::NewGame(int num_players){
-    //connect(c, popup::on_pushButton_clicked, this, &CellWindow::CellClickedSlot);
-    //connect
-    qDebug()<<"iii";
-    qDebug()<<num_players;
-    SetUpBoard();
-    //std::vector<Square* > test = squares_.back();
-    int k = 0;
-    for (int i = 0; i <num_players; i++){
-        Player* new_player = new Player(i+1, true);
-        scene->addItem(new_player);
-        new_player->set_location(squares_.back());
-        players_.push_back(new_player);
+void BoardWindow::NewGame(int num_humans){
 
-        qDebug()<<"i";
-        k++;
+    active_player_ = 0;
+    SetUpBoard();
+    PlayerFactory pf;
+
+    for (int i = 0; i < num_humans; i++){
+        Player* p = pf.createHuman(i+1);
+        scene->addItem(p);
+        p->set_location(squares_[0]);
+        players_.push_back(p);
+        qDebug()<<"new human";
     }
-    int num_cpu = 4-num_players;
+
+    int num_cpu = 4-num_humans;
     if (num_cpu>0){
-        for (k; k<4; k++){
-            Player* new_player = new Player(k+1, false);
-            scene->addItem(new_player);
-            new_player->set_location(squares_.back());
-            players_.push_back(new_player);
+        for (int i = 0; i < num_cpu; i++){
+            Player* p = pf.createCpu(i+1);
+            scene->addItem(p);
+            p->set_location(squares_[0]);
+            players_.push_back(p);
             qDebug()<<"new cpu";
         }
 
@@ -148,58 +146,80 @@ void BoardWindow::changeWindow()
 }
 
 
-void BoardWindow::on_powerup_button_clicked(Player *p)
+void BoardWindow::on_powerup_button_clicked()
 { //use the power up
-    Powerup p_powerup = p->get_powerup();
-    if (p_powerup==Powerup::None){
-        qDebug()<<"Sorry, no powerup currently available";
-    } else {
-        p->set_powerup(Powerup::None);
-    }
+    qDebug() << "in the power up button function";
+//    Powerup p_powerup = p->get_powerup();
+//    if (p_powerup==Powerup::None){
+//        qDebug()<<"Sorry, no powerup currently available";
+//    } else {
+//        p->set_powerup(Powerup::None);
+//    }
 }
 
-void BoardWindow::on_drawcard_button_clicked(Player *p)
+void BoardWindow::on_drawcard_button_clicked()
 { //draw card
+   qDebug() << "i'm in the draw card function";
     Card current_card;
     QColor color_needed;
-    if (rand() % 5 == 0){
+    std::string s = "You drew a ";
+    int num = rand() % 5;
+    if (num == 0){
+        s += "Blue card.";
         current_card =  Card::Blue;
         color_needed = QColor(244, 154, 194);
     }
-    if (rand() % 5 == 1){
+    if (num == 1){
+        s += "Green card.";
         current_card = Card::Green;
         color_needed = QColor(154, 239, 244);
     }
-    if (rand() % 5 == 2){
+    if (num == 2){
+        s += "Red card.";
         current_card = Card::Red;
         color_needed = QColor(154, 244, 204);
     }
-    if (rand() % 5 == 3){
+    if (num == 3){
+        s += "Yellow card.";
         current_card = Card::Yellow;
         color_needed = QColor(239, 115, 108);
     }
-    if (rand() % 5 == 4){
+    if (num == 4){
+        s += "Pink card.";
         current_card = Card::Pink;
         color_needed = QColor(239, 244, 154);
     }
 
+    ui->drawCardLabel->setText(s.c_str());
+    scene->update();
+
+    Player* p = players_[active_player_];
     Square *current_square = p->get_location();
     Square *next_square = GetNextSquare(current_square, color_needed);
     if (next_square->get_id()!= -1){
         //then it's a valid square so move the player to that location
+        qDebug() << "moviing player";
+        scene->removeItem(p);
         p->set_location(next_square);
+        scene->addItem(p);
+    } else {
+        qDebug() << "next square id invalid";
     }
-
-
-
+    if (active_player_ == 3) {
+        active_player_ = 0;
+    } else {
+        active_player_++;
+    }
 
 }
 
 Square* BoardWindow::GetNextSquare(Square* previous_square, QColor color_needed){ //gets the next square of the card's color
     int square_id = previous_square->get_id();
     int ctr = square_id+1;
-
-    for (ctr; ctr<squares_.size(); ctr++){
+    qDebug() << "Square id:" << square_id;
+    qDebug() << "Needed color:" << color_needed;
+    for (int ctr; ctr < squares_.size(); ctr++){
+        qDebug() << ctr << ", " << squares_[ctr]->get_color();
         if (squares_[ctr]->get_color() == color_needed){
             return squares_[ctr];
         }
@@ -216,18 +236,3 @@ Square* BoardWindow::GetNextSquare(Square* previous_square, QColor color_needed)
 void BoardWindow::TakeTurn(Player *p){
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

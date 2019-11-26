@@ -9,13 +9,13 @@ Player::Player(int id, bool is_human)
     y_ = 300;
 }
 
-Player* PlayerFactory::createCpu(int id, bool is_human) {
+Player* PlayerFactory::createCpu(int id) {
     Player* p = new Player(id, false);
     return p;
 }
 
 
-Player* PlayerFactory::createHuman(int id, bool is_human) {
+Player* PlayerFactory::createHuman(int id) {
     Player* p = new Player(id, true);
     return p;
 }

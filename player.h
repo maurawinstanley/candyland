@@ -20,7 +20,7 @@ public:
 
     Square* get_location() { return location_; };
 
-    void set_location(Square* loc) { location_ = loc; };
+    void set_location(Square* loc) { location_ = loc; x_ = loc->get_x(); y_ = loc->get_y();};
 
     int get_wins() { return wins_; };
 
@@ -79,9 +79,9 @@ class PlayerFactory {
 public:
 
 
-    static Player* createHuman(int id, bool is_human);
+    static Player* createHuman(int id);
 
-    static Player* createCpu(int id, bool is_human);
+    static Player* createCpu(int id);
 
 };
 
