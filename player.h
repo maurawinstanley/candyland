@@ -1,6 +1,8 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 #include "square.h"
+#include "directory.h"
+#include "datafile.h"
 #include <QColor>
 #include <QGraphicsItem>
 #include <cstdlib>
@@ -8,6 +10,19 @@
 #include <cmath>
 #include <iostream>
 #include <QtWidgets>
+#include <QObject>
+#include <QGraphicsScene>
+#include <QMimeData>
+#include <QWidget>
+#include <QFile>
+#include <QDebug>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QJsonArray>
+#include <QJsonValue>
+#include <QGraphicsSceneMouseEvent>
+#include <queue>
+#include <QIcon>
 
 
 
@@ -16,7 +31,9 @@ class Player: public QObject, public QGraphicsItem {
     Q_OBJECT
 
 public:
-    Player(int id, bool is_human);
+    Player(int id, bool is_human, QIcon icon);
+
+    void drawIcon(QPainter *painter, QPoint pos);
 
     Square* get_location() { return location_; };
 
@@ -25,6 +42,8 @@ public:
     int get_wins() { return wins_; };
 
     void IncrementWins() { wins_++; };
+
+    void AddIcon(int x, int y);
 
     Powerup get_powerup() { return powerup_; };
 
@@ -35,6 +54,9 @@ public:
     void drawCard();
 
     void Move();
+
+    void DrawPlayer(QPainter *painter, int value);
+
 
     QRectF boundingRect() const override;
 
@@ -62,14 +84,21 @@ private:
 
     QColor color_;
 
-    static const int width_ = 15;
+    static const int width_ = 35;
 
     int x_;
 
     int y_;
 
+    QIcon piece(int) const;
+
+    std::string icon_string_;
 
     friend bool operator==(const Player &first, const Player &other);
+
+    QIcon icon_;
+
+
 
 };
 
@@ -79,9 +108,9 @@ class PlayerFactory {
 public:
 
 
-    static Player* createHuman(int id);
+    static Player* createHuman(int id, QIcon icon);
 
-    static Player* createCpu(int id);
+    static Player* createCpu(int id, QIcon icon);
 
 };
 

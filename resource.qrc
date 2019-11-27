@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/Documents/prog_proj/in_class">
+        <file>images/candy4.svg</file>
+        <file>images/candy3.svg</file>
+        <file>images/candy1.svg</file>
+        <file>images/candy2.svg</file>
+    </qresource>
+</RCC>

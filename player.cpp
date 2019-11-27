@@ -1,6 +1,6 @@
 #include "player.h"
 
-Player::Player(int id, bool is_human)
+Player::Player(int id, bool is_human, QIcon icon)
 {
     color_ = QColor(255,20,147);
     powerup_ = None;
@@ -8,16 +8,34 @@ Player::Player(int id, bool is_human)
     x_ = 675;
     y_ = 300;
     wins_ = 0;
-}
 
-Player* PlayerFactory::createCpu(int id) {
-    Player* p = new Player(id, false);
+    icon_ = icon;
+}
+/*void Player::drawIcon(QPainter *painter, QPoint pos)
+{
+    QPixmap pixmap = icon.pixmap(QSize(22, 22),
+                                   isEnabled() ? QIcon::Normal
+                                               : QIcon::Disabled,
+                                   isChecked() ? QIcon::On
+                                               : QIcon::Off);
+    painter->drawPixmap(pos, pixmap);
+}
+void Player::AddIcon(int x, int y) {
+    QPixmap pixmap("://icons/icon_file.png");
+    Directory *test = new DataFile(x, y, pixmap);
+    addItem(test);
+
+}*/
+
+
+Player* PlayerFactory::createCpu(int id,QIcon icon) {
+    Player* p = new Player(id, false, icon);
     return p;
 }
 
 
-Player* PlayerFactory::createHuman(int id) {
-    Player* p = new Player(id, true);
+Player* PlayerFactory::createHuman(int id, QIcon icon) {
+    Player* p = new Player(id, true, icon);
     return p;
 }
 
@@ -56,9 +74,21 @@ void Player::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QW
     QBrush b = painter->brush();
     painter->setBrush(QBrush(color_));
 
-    painter->drawRect(QRect(this->x_, this->y_, this->width_, this->width_));
+    painter->drawRect(QRect(this->x_, this->y_, 0, 0));
     painter->setBrush(b);
+
+    //QIcon icon = QIcon(":/Documents/prog_proj/in_class/images/candy1.svg");
+    QRect rect = QRect(x_, y_, width_, width_);
+    icon_.paint(painter, rect, Qt::AlignCenter);
+
 }
+
+/*void Player::DrawPlayer(QPainter *painter, int value){
+    QIcon icon = piece(value);
+    QRect rect = QRect(x_, y_, width_, width_);
+    icon.paint(painter, rect, Qt::AlignCenter);
+}*/
+
 
 void Player::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {

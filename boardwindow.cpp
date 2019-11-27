@@ -22,6 +22,11 @@ BoardWindow::BoardWindow(QWidget *parent) :
     connect(popup, SIGNAL(finish_clicked()), this, SLOT(on_finish_clicked()));
     ui->drawcard_button->setEnabled(false);
     ui->powerup_button->setEnabled(false);
+    player_icons_[1] = QIcon(":/Documents/prog_proj/in_class/images/candy1.svg");
+    player_icons_[2] = QIcon(":/Documents/prog_proj/in_class/images/candy2.svg");
+    player_icons_[3] = QIcon(":/Documents/prog_proj/in_class/images/candy3.svg");
+    player_icons_[4] = QIcon(":/Documents/prog_proj/in_class/images/candy4.svg");
+
 
 }
 
@@ -38,6 +43,11 @@ void BoardWindow::on_pushButton_clicked()
 
 }
 
+/*void BoardWindow::paintEvent(Player *p, int value, QPaintEvent *event){
+    p->DrawPlayer(&painter, 2);
+
+}*/
+
 void BoardWindow::NewGame(int num_humans){
 
     active_player_ = 0;
@@ -45,7 +55,9 @@ void BoardWindow::NewGame(int num_humans){
     PlayerFactory pf;
 
     for (int i = 0; i < num_humans; i++){
-        Player* p = pf.createHuman(i+1);
+        QIcon icon = player_icons_[i+1];
+
+        Player* p = pf.createHuman(i+1, icon);
         scene->addItem(p);
         p->set_location(squares_[0]);
         players_.push_back(p);
@@ -54,8 +66,9 @@ void BoardWindow::NewGame(int num_humans){
 
     int num_cpu = 4-num_humans;
     if (num_cpu>0){
-        for (int i = 0; i < num_cpu; i++){
-            Player* p = pf.createCpu(i+1);
+        for (num_cpu; num_cpu < 4; num_cpu++){
+            QIcon icon = player_icons_[num_cpu+1];
+            Player* p = pf.createCpu(num_cpu+1, icon);
             scene->addItem(p);
             p->set_location(squares_[0]);
             players_.push_back(p);

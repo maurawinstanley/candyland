@@ -50,6 +50,8 @@ private:
     std::vector<Player*> players_;
     std::vector<Square*> squares_;
     int active_player_;
+    QMap<int, QIcon> player_icons_;
+
 };
 
 #endif // BOARDWINDOW_H
