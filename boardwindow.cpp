@@ -41,6 +41,7 @@ BoardWindow::BoardWindow(QWidget *parent) :
     connect(popup, SIGNAL(finish_clicked()), this, SLOT(on_finish_clicked()));
     ui->drawcard_button->setEnabled(false);
     ui->powerup_button->setEnabled(false);
+    ui->moveButton->setEnabled(false);
     player_icons_[0] = QIcon(":/Documents/prog_proj/in_class/images/computer.svg");
     player_icons_[1] = QIcon(":/Documents/prog_proj/in_class/images/candy1.svg");
     player_icons_[2] = QIcon(":/Documents/prog_proj/in_class/images/candy2.svg");
@@ -174,36 +175,28 @@ void BoardWindow::changeWindow()
 
 
 void BoardWindow::on_powerup_button_clicked() {
+
+    // set active to most recent player
     if (active_player_ == 0) {
         active_player_ = 3;
     } else {
         active_player_--;
     }
+    Player* p = players_[active_player_];
+    Powerup powup = p->get_powerup();
+
     std::string turn_string = "PLAYER " + std::to_string(active_player_ + 1) + ", it is your turn to powerup.";
     ui->turnLabel->setText(turn_string.c_str());
-    //use the power up
-    qDebug() << "in the power up button function";
-    Player* p = players_[active_player_];
-    qDebug()<<active_player_;
 
-    Powerup powup = p->get_powerup();
+    //use the power up
     if (powup==Powerup::None){
         qDebug()<<"Sorry, no powerup currently available";
     } else {
-        //p->set_powerup(Powerup::None);
         if (powup == Powerup::Double){
-            std::string card_string = "";
-            qDebug()<<"double";
-            //on_drawcard_button_clicked();
             Square * current_square = p->get_location();
-            qDebug()<<current_square->get_id();
             QColor color_needed = current_square->get_color();
-            qDebug()<<color_needed;
             Square *next_square = GetNextSquare(current_square, color_needed);
-            qDebug()<<"got the next square";
-            qDebug()<<next_square->get_color();
-            TakeTurn(next_square, current_square, card_string);
-
+            MovePlayer(next_square, current_square);
 
         } else if (powup == Powerup::PlusOne) {
             qDebug()<<"Plus one";
@@ -213,10 +206,9 @@ void BoardWindow::on_powerup_button_clicked() {
             scene->removeItem(p);
             p->set_location(plus_one);
             scene->addItem(p);
-            std::string card_string = " card and advanced " + std::to_string(plus_one->get_id() - current_square->get_id()) + " spaces.";
             if (plus_one->get_powerup()!=Powerup::None){
-                qDebug()<<"there's a powerup";
-                qDebug()<<plus_one->get_powerup();
+//                qDebug()<<"there's a powerup";
+//                qDebug()<<plus_one->get_powerup();
                 p->set_powerup(plus_one->get_powerup());
             }
 
@@ -229,25 +221,25 @@ void BoardWindow::on_powerup_button_clicked() {
             scene->removeItem(p);
             p->set_location(minus_one);
             scene->addItem(p);
-            std::string card_string = " card and advanced " + std::to_string(minus_one->get_id() - current_square->get_id()) + " spaces.";
             if (minus_one->get_powerup()){
-                qDebug()<<"there's a powerup";
-                qDebug()<<minus_one->get_powerup();
+//                qDebug()<<"there's a powerup";
+//                qDebug()<<minus_one->get_powerup();
                 p->set_powerup(minus_one->get_powerup());
             }
-
         }
-
     }
+
+    p->set_powerup(Powerup::None);
+    ui->powerup_button->setEnabled(false);
+
     if (active_player_ == 3) {
         active_player_ = 0;
     } else {
         active_player_++;
     }
+
     turn_string = "PLAYER " + std::to_string(active_player_ + 1) + ", it is your turn to draw a card.";
     ui->turnLabel->setText(turn_string.c_str());
-    ui->powerup_button->setEnabled(false);
-    p->set_powerup(Powerup::None);
 
 }
 
@@ -255,7 +247,6 @@ void BoardWindow::on_drawcard_button_clicked() {
     //draw card
     QColor color_needed;
     std::string card_string = "PLAYER " + std::to_string(active_player_ + 1) + " drew a ";
-
     int num = rand() % 5;
     if (num == 0){
         card_string += "Blue";
@@ -273,36 +264,48 @@ void BoardWindow::on_drawcard_button_clicked() {
         card_string += "Pink";
         color_needed = QColor(244, 154, 194);
     }
+    card_string += " card";
+    ui->drawCardLabel->setText(card_string.c_str());
+
     Card *c = new Card(color_needed);
     card_scene->addItem(c);
+    current_card_ = c;
+    ui->drawcard_button->setEnabled(false);
+    ui->moveButton->setEnabled(true);
+}
 
+void BoardWindow::on_moveButton_clicked()
+{
     Player* p = players_[active_player_];
 
     Square *current_square = p->get_location();
-    Square *next_square = GetNextSquare(current_square, color_needed);
-    TakeTurn(next_square, current_square, card_string);
+    Square *next_square = GetNextSquare(current_square, current_card_->get_color());
+    MovePlayer(next_square, current_square);
+    ui->moveButton->setEnabled(false);
+    ui->drawcard_button->setEnabled(true);
 }
 
-void BoardWindow::TakeTurn(Square * next_square, Square* current_square, std::string card_string){
-    qDebug()<<"got the next square";
+void BoardWindow::MovePlayer(Square * next_square, Square* current_square){
+//    qDebug()<<"got the next square";
     Player *p = players_[active_player_];
-
+    std::string move_string = "PLAYER " + std::to_string(active_player_+1) + " advanced ";
     if (next_square->get_id()!= -1){
         // then it's a valid square so move the player to that location
         scene->removeItem(p);
         p->set_location(next_square);
         scene->addItem(p);
-        card_string += " card and advanced " + std::to_string(next_square->get_id() - current_square->get_id()) + " spaces.";
+        move_string +=  std::to_string(next_square->get_id() - current_square->get_id()) + " spaces.";
         if (next_square->get_powerup()!=Powerup::None){
-            qDebug()<<"there's a powerup";
-            qDebug()<<next_square->get_powerup();
+//            qDebug()<<"there's a powerup";
+//            qDebug()<<next_square->get_powerup();
             p->set_powerup(next_square->get_powerup());
         }
     } else  {
-        card_string += " card. There are none left so you have not moved.";
+        move_string += "0 spaces";
     }
 
-    ui->drawCardLabel->setText(card_string.c_str());
+    ui->moveLabel->setText(move_string .c_str());
+
     CheckForWinner(next_square);
 
     Powerup powup = p->get_powerup();

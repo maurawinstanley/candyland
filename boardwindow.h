@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include "popupwindow.h"
+#include "card.h"
 #include "player.h"
 
 namespace Ui {
@@ -21,7 +22,7 @@ public:
 
     void SetUpBoard();
 
-    void TakeTurn(Square *next_square, Square *current_square, std::string card_string);
+    void MovePlayer(Square *next_square, Square *current_square);
 
     Square* GetNextSquare(Square* previous_square, QColor color_needed);
 
@@ -44,12 +45,15 @@ private slots:
 
     void on_newGameButton_clicked();
 
+    void on_moveButton_clicked();
+
 signals:
     // for distance
     void powerupUsed();
 
 private:
     Ui::BoardWindow *ui;
+
     QGraphicsScene *scene;
     QGraphicsScene *graph_scene;
     QGraphicsScene *card_scene;
@@ -58,6 +62,8 @@ private:
 
     QGraphicsView * view2;
     QGraphicsView * card_view;
+
+    Card* current_card_;
 
     std::vector<Player*> players_;
     std::vector<Square*> squares_;
