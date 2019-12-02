@@ -37,6 +37,8 @@ public:
 
     static int get_width() { return width_; }
 
+    virtual Powerup get_powerup() { return Powerup::None;} ;
+
 signals:
     // for distance
     void SquareSelected(Square *sq);
@@ -65,6 +67,8 @@ private:
 class PowerSquare: public Square {
 public:
     PowerSquare(const int x, const int y, int id);
+
+    Powerup get_powerup() { return powerup_; };
 private:
     Powerup powerup_;
 };

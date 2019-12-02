@@ -8,27 +8,15 @@ Player::Player(int id, bool is_human, QIcon icon)
     x_ = 675;
     y_ = 300;
     wins_ = 0;
-
+    id_ = id;
     icon_ = icon;
+    qDebug()<<"ID";
+    qDebug()<<id_;
+    offset_ = id_*5;
 }
-/*void Player::drawIcon(QPainter *painter, QPoint pos)
-{
-    QPixmap pixmap = icon.pixmap(QSize(22, 22),
-                                   isEnabled() ? QIcon::Normal
-                                               : QIcon::Disabled,
-                                   isChecked() ? QIcon::On
-                                               : QIcon::Off);
-    painter->drawPixmap(pos, pixmap);
-}
-void Player::AddIcon(int x, int y) {
-    QPixmap pixmap("://icons/icon_file.png");
-    Directory *test = new DataFile(x, y, pixmap);
-    addItem(test);
-
-}*/
 
 
-Player* PlayerFactory::createCpu(int id,QIcon icon) {
+Player* PlayerFactory::createCpu(int id, QIcon icon) {
     Player* p = new Player(id, false, icon);
     return p;
 }
@@ -39,17 +27,14 @@ Player* PlayerFactory::createHuman(int id, QIcon icon) {
     return p;
 }
 
-//QColor Cell::alive_color_ = QColor(255,20,147);
-//QColor Cell::dead_color_ = QColor(255, 255, 255);
 
 bool operator==(const Player &first, const Player &other) {
     return true;
-    //return first.get_id() == other.get_id();
 }
 
 QRectF Player::boundingRect() const
 {
-    return QRectF(x_, y_, width_, width_);
+    return QRectF(x_+offset_, y_+offset_, width_, width_);
 }
 /**
     basic func to add ellipse for cell
@@ -58,7 +43,7 @@ QRectF Player::boundingRect() const
 QPainterPath Player::shape() const
 {
     QPainterPath path;
-    path.addEllipse(x_, y_, width_, width_);
+    path.addEllipse(x_+offset_, y_+offset_, width_, width_);
     return path;
 }
 
@@ -74,20 +59,14 @@ void Player::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QW
     QBrush b = painter->brush();
     painter->setBrush(QBrush(color_));
 
-    painter->drawRect(QRect(this->x_, this->y_, 0, 0));
+    painter->drawRect(QRect(this->x_ , this->y_ , 0, 0));
     painter->setBrush(b);
 
     //QIcon icon = QIcon(":/Documents/prog_proj/in_class/images/candy1.svg");
-    QRect rect = QRect(x_, y_, width_, width_);
+    QRect rect = QRect(x_ +offset_, y_ +offset_, width_, width_);
     icon_.paint(painter, rect, Qt::AlignCenter);
 
 }
-
-/*void Player::DrawPlayer(QPainter *painter, int value){
-    QIcon icon = piece(value);
-    QRect rect = QRect(x_, y_, width_, width_);
-    icon.paint(painter, rect, Qt::AlignCenter);
-}*/
 
 
 void Player::mousePressEvent(QGraphicsSceneMouseEvent *event)

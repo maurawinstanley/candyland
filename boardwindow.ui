@@ -14,7 +14,7 @@
    <string>BoardWindow</string>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <widget class="QPushButton" name="pushButton">
+   <widget class="QPushButton" name="newGameButton">
     <property name="geometry">
      <rect>
       <x>640</x>
@@ -87,6 +87,55 @@
     </property>
     <property name="text">
      <string>Click New Game to begin playing.</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="powLabel">
+    <property name="geometry">
+     <rect>
+      <x>520</x>
+      <y>50</y>
+      <width>231</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QLabel" name="drawCardLabel_2">
+    <property name="geometry">
+     <rect>
+      <x>520</x>
+      <y>50</y>
+      <width>141</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label">
+    <property name="geometry">
+     <rect>
+      <x>47</x>
+      <y>480</y>
+      <width>551</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QGraphicsView" name="graphicsView_2">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>580</y>
+      <width>331</width>
+      <height>141</height>
+     </rect>
     </property>
    </widget>
   </widget>

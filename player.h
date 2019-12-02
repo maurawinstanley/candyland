@@ -41,6 +41,8 @@ public:
 
     int get_wins() { return wins_; };
 
+    int get_id() { return id_; };
+
     void IncrementWins() { wins_++; };
 
     void AddIcon(int x, int y);
@@ -89,6 +91,8 @@ private:
     int x_;
 
     int y_;
+
+    int offset_;
 
     QIcon piece(int) const;
 

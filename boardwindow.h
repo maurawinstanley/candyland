@@ -30,6 +30,8 @@ public:
 
     Square* GetNextSquare(Square* previous_square, QColor color_needed);
 
+    void CheckForWinner(Square* next_square);
+
 private slots:
     void on_pushButton_clicked();
 
@@ -41,11 +43,23 @@ private slots:
 
     void on_drawcard_button_clicked();
 
+    void on_powLabel_linkActivated(const QString &link);
+
+    void UpdateGraph();
+
+    void on_newGameButton_clicked();
+
+signals:
+    // for distance
+    void powerupUsed();
+
 private:
     Ui::BoardWindow *ui;
     QGraphicsScene *scene;
     QGraphicsScene *graph_scene;
     Popupwindow *popup;
+
+    QGraphicsView * view2;
 
     std::vector<Player*> players_;
     std::vector<Square*> squares_;
