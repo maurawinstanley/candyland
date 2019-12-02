@@ -5,9 +5,6 @@
 #include "popupwindow.h"
 #include "player.h"
 
-enum Card {Blue, Green, Red, Yellow, Pink};
-
-
 namespace Ui {
 class BoardWindow;
 }
@@ -23,8 +20,6 @@ public:
     void NewGame(int num_players);
 
     void SetUpBoard();
-
-    Card DrawCard();
 
     void TakeTurn(Square *next_square, Square *current_square, std::string card_string);
 
@@ -57,9 +52,12 @@ private:
     Ui::BoardWindow *ui;
     QGraphicsScene *scene;
     QGraphicsScene *graph_scene;
+    QGraphicsScene *card_scene;
+
     Popupwindow *popup;
 
     QGraphicsView * view2;
+    QGraphicsView * card_view;
 
     std::vector<Player*> players_;
     std::vector<Square*> squares_;

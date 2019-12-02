@@ -1,6 +1,7 @@
 #include "boardwindow.h"
 #include "ui_boardwindow.h"
 #include "square.h"
+#include "card.h"
 #include <QDebug>
 #include <string>
 
@@ -22,15 +23,19 @@ BoardWindow::BoardWindow(QWidget *parent) :
     ui->setupUi(this);
     scene = new QGraphicsScene;
     graph_scene = new QGraphicsScene;
+    card_scene = new QGraphicsScene;
 
     QGraphicsView * view = ui->graphicsView;
     view->setScene(scene);
     view->setSceneRect(0,0,view->frameSize().width(),view->frameSize().height());
 
     view2 = ui->graphicsView_2;
-
     view2->setScene(graph_scene);
     view2->setSceneRect(0,0,view2->frameSize().width(),view2->frameSize().height());
+
+    card_view = ui->cardView;
+    card_view->setScene(card_scene);
+    card_view->setSceneRect(0,0,card_view->frameSize().width(),card_view->frameSize().height());
 
     popup = new Popupwindow();
     connect(popup, SIGNAL(finish_clicked()), this, SLOT(on_finish_clicked()));
@@ -248,32 +253,28 @@ void BoardWindow::on_powerup_button_clicked() {
 
 void BoardWindow::on_drawcard_button_clicked() {
     //draw card
-    Card current_card;
     QColor color_needed;
     std::string card_string = "PLAYER " + std::to_string(active_player_ + 1) + " drew a ";
 
     int num = rand() % 5;
     if (num == 0){
         card_string += "Blue";
-        current_card =  Card::Blue;
-        color_needed = QColor(244, 154, 194);
+        color_needed = QColor(154, 239, 244);
     } else if (num == 1){
         card_string += "Green";
-        current_card = Card::Green;
-        color_needed = QColor(154, 239, 244);
+        color_needed = QColor(154, 244, 204);
     } else if (num == 2){
         card_string += "Red";
-        current_card = Card::Red;
-        color_needed = QColor(154, 244, 204);
+        color_needed = QColor(239, 115, 108);
     } else if (num == 3){
         card_string += "Yellow";
-        current_card = Card::Yellow;
-        color_needed = QColor(239, 115, 108);
+        color_needed = QColor(239, 244, 154);
     } else {
         card_string += "Pink";
-        current_card = Card::Pink;
-        color_needed = QColor(239, 244, 154);
+        color_needed = QColor(244, 154, 194);
     }
+    Card *c = new Card(color_needed);
+    card_scene->addItem(c);
 
     Player* p = players_[active_player_];
 
