@@ -14,7 +14,7 @@
    <string>BoardWindow</string>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <widget class="QPushButton" name="newGameButton">
+   <widget class="QPushButton" name="newgame_button">
     <property name="geometry">
      <rect>
       <x>640</x>
@@ -148,7 +148,7 @@
      </rect>
     </property>
    </widget>
-   <widget class="QPushButton" name="moveButton">
+   <widget class="QPushButton" name="moveplayer_button">
     <property name="geometry">
      <rect>
       <x>620</x>

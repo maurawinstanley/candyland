@@ -29,11 +29,8 @@ public:
     void CheckForWinner(Square* next_square);
 
 private slots:
-    void on_pushButton_clicked();
 
     void on_finish_clicked();
-
-    void changeWindow();
 
     void on_powerup_button_clicked();
 
@@ -41,11 +38,13 @@ private slots:
 
     void on_powLabel_linkActivated(const QString &link);
 
+    void on_newgame_button_clicked();
+
+    void on_moveplayer_button_clicked();
+
+    void changeWindow();
+
     void UpdateGraph();
-
-    void on_newGameButton_clicked();
-
-    void on_moveButton_clicked();
 
 signals:
     // for distance
@@ -54,14 +53,15 @@ signals:
 private:
     Ui::BoardWindow *ui;
 
-    QGraphicsScene *scene;
+    QGraphicsScene *board_scene;
     QGraphicsScene *graph_scene;
     QGraphicsScene *card_scene;
 
     Popupwindow *popup;
 
-    QGraphicsView * view2;
-    QGraphicsView * card_view;
+    QGraphicsView* board_view;
+    QGraphicsView* graph_view;
+    QGraphicsView* card_view;
 
     Card* current_card_;
 

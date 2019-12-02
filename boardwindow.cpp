@@ -21,17 +21,17 @@ BoardWindow::BoardWindow(QWidget *parent) :
     ui(new Ui::BoardWindow)
 {
     ui->setupUi(this);
-    scene = new QGraphicsScene;
+    board_scene = new QGraphicsScene;
     graph_scene = new QGraphicsScene;
     card_scene = new QGraphicsScene;
 
-    QGraphicsView * view = ui->graphicsView;
-    view->setScene(scene);
-    view->setSceneRect(0,0,view->frameSize().width(),view->frameSize().height());
+    board_view = ui->graphicsView;
+    board_view->setScene(board_scene);
+    board_view->setSceneRect(0,0,board_view->frameSize().width(),board_view->frameSize().height());
 
-    view2 = ui->graphicsView_2;
-    view2->setScene(graph_scene);
-    view2->setSceneRect(0,0,view2->frameSize().width(),view2->frameSize().height());
+    graph_view = ui->graphicsView_2;
+    graph_view->setScene(graph_scene);
+    graph_view->setSceneRect(0,0,graph_view->frameSize().width(),graph_view->frameSize().height());
 
     card_view = ui->cardView;
     card_view->setScene(card_scene);
@@ -41,7 +41,7 @@ BoardWindow::BoardWindow(QWidget *parent) :
     connect(popup, SIGNAL(finish_clicked()), this, SLOT(on_finish_clicked()));
     ui->drawcard_button->setEnabled(false);
     ui->powerup_button->setEnabled(false);
-    ui->moveButton->setEnabled(false);
+    ui->moveplayer_button->setEnabled(false);
     player_icons_[0] = QIcon(":/Documents/prog_proj/in_class/images/computer.svg");
     player_icons_[1] = QIcon(":/Documents/prog_proj/in_class/images/candy1.svg");
     player_icons_[2] = QIcon(":/Documents/prog_proj/in_class/images/candy2.svg");
@@ -56,11 +56,6 @@ BoardWindow::~BoardWindow()
     delete ui;
 }
 
-void BoardWindow::on_pushButton_clicked()
-{
-
-}
-
 void BoardWindow::NewGame(int num_humans){
 
     active_player_ = 0;
@@ -72,7 +67,7 @@ void BoardWindow::NewGame(int num_humans){
         QIcon icon = player_icons_[i+1];
 
         Player* p = pf.createHuman(i+1, icon);
-        scene->addItem(p);
+        board_scene->addItem(p);
         p->set_location(squares_[0]);
         players_.push_back(p);
         qDebug()<<"new human";
@@ -83,7 +78,7 @@ void BoardWindow::NewGame(int num_humans){
         for (num_cpu; num_cpu < 4; num_cpu++){
             QIcon icon = player_icons_[0];
             Player* p = pf.createCpu(num_cpu+1, icon);
-            scene->addItem(p);
+            board_scene->addItem(p);
             p->set_location(squares_[0]);
             players_.push_back(p);
             qDebug()<<"new cpu";
@@ -120,13 +115,13 @@ void BoardWindow::SetUpBoard() {
             s = new Square(x*Square::get_width(), 0, counter);
         }
         counter++;
-        scene->addItem(s);
+        board_scene->addItem(s);
         squares_.push_back(s);
     }
 
     s = new Square(9*Square::get_width(), Square::get_width(), counter);
     counter++;
-    scene->addItem(s);
+    board_scene->addItem(s);
     squares_.push_back(s);
 
     // middle row
@@ -137,13 +132,13 @@ void BoardWindow::SetUpBoard() {
             s = new Square(x*Square::get_width(), 2*Square::get_width(), counter);
         }
         counter++;
-        scene->addItem(s);
+        board_scene->addItem(s);
         squares_.push_back(s);
     }
 
     s = new Square(0, 3*Square::get_width(), counter);
     counter++;
-    scene->addItem(s);
+    board_scene->addItem(s);
     squares_.push_back(s);
 
     // bottom row
@@ -154,7 +149,7 @@ void BoardWindow::SetUpBoard() {
             s = new Square(x*Square::get_width(), 4*Square::get_width(), counter);
         }
         counter++;
-        scene->addItem(s);
+        board_scene->addItem(s);
         squares_.push_back(s);
     }
 }
@@ -203,9 +198,9 @@ void BoardWindow::on_powerup_button_clicked() {
             Square *current_square = p->get_location();
             int curr_id = current_square->get_id();
             Square *plus_one = squares_[curr_id+1];
-            scene->removeItem(p);
+            board_scene->removeItem(p);
             p->set_location(plus_one);
-            scene->addItem(p);
+            board_scene->addItem(p);
             if (plus_one->get_powerup()!=Powerup::None){
 //                qDebug()<<"there's a powerup";
 //                qDebug()<<plus_one->get_powerup();
@@ -218,9 +213,9 @@ void BoardWindow::on_powerup_button_clicked() {
             Square *current_square = p->get_location();
             int curr_id = current_square->get_id();
             Square *minus_one = squares_[curr_id-1];
-            scene->removeItem(p);
+            board_scene->removeItem(p);
             p->set_location(minus_one);
-            scene->addItem(p);
+            board_scene->addItem(p);
             if (minus_one->get_powerup()){
 //                qDebug()<<"there's a powerup";
 //                qDebug()<<minus_one->get_powerup();
@@ -267,21 +262,22 @@ void BoardWindow::on_drawcard_button_clicked() {
     card_string += " card";
     ui->drawCardLabel->setText(card_string.c_str());
 
-    Card *c = new Card(color_needed);
-    card_scene->addItem(c);
-    current_card_ = c;
+    card_scene->removeItem(current_card_);
+    current_card_= new Card(color_needed);
+    card_scene->addItem(current_card_);
+
     ui->drawcard_button->setEnabled(false);
-    ui->moveButton->setEnabled(true);
+    ui->moveplayer_button->setEnabled(true);
 }
 
-void BoardWindow::on_moveButton_clicked()
+void BoardWindow::on_moveplayer_button_clicked()
 {
     Player* p = players_[active_player_];
 
     Square *current_square = p->get_location();
     Square *next_square = GetNextSquare(current_square, current_card_->get_color());
     MovePlayer(next_square, current_square);
-    ui->moveButton->setEnabled(false);
+    ui->moveplayer_button->setEnabled(false);
     ui->drawcard_button->setEnabled(true);
 }
 
@@ -291,9 +287,9 @@ void BoardWindow::MovePlayer(Square * next_square, Square* current_square){
     std::string move_string = "PLAYER " + std::to_string(active_player_+1) + " advanced ";
     if (next_square->get_id()!= -1){
         // then it's a valid square so move the player to that location
-        scene->removeItem(p);
+        board_scene->removeItem(p);
         p->set_location(next_square);
-        scene->addItem(p);
+        board_scene->addItem(p);
         move_string +=  std::to_string(next_square->get_id() - current_square->get_id()) + " spaces.";
         if (next_square->get_powerup()!=Powerup::None){
 //            qDebug()<<"there's a powerup";
@@ -373,7 +369,7 @@ void BoardWindow::UpdateGraph(){
         //graph_scene->addItem(item2);
     }
     graph_scene->update();
-    view2->update();
+    graph_view->update();
 }
 
 
@@ -382,8 +378,7 @@ void BoardWindow::on_powLabel_linkActivated(const QString &link)
 
 }
 
-void BoardWindow::on_newGameButton_clicked()
+void BoardWindow::on_newgame_button_clicked()
 {
     popup->show();
-
 }
