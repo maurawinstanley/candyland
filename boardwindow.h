@@ -26,7 +26,7 @@ public:
 
     Card DrawCard();
 
-    void TakeTurn(Player *p);
+    void TakeTurn(Square *next_square, Square *current_square, std::string card_string);
 
     Square* GetNextSquare(Square* previous_square, QColor color_needed);
 

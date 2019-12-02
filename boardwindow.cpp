@@ -179,12 +179,9 @@ void BoardWindow::on_powerup_button_clicked() {
     //use the power up
     qDebug() << "in the power up button function";
     Player* p = players_[active_player_];
-    qDebug()<< "PLAYER: ";
-    qDebug()<<p->get_id();
     qDebug()<<active_player_;
 
     Powerup powup = p->get_powerup();
-//    Powerup p_powerup = p->get_powerup();
     if (powup==Powerup::None){
         qDebug()<<"Sorry, no powerup currently available";
     } else {
@@ -200,37 +197,8 @@ void BoardWindow::on_powerup_button_clicked() {
             Square *next_square = GetNextSquare(current_square, color_needed);
             qDebug()<<"got the next square";
             qDebug()<<next_square->get_color();
-            if (next_square->get_id()!= -1){
-                // then it's a valid square so move the player to that location
-                scene->removeItem(p);
-                p->set_location(next_square);
-                scene->addItem(p);
-                card_string += " card and advanced " + std::to_string(next_square->get_id() - current_square->get_id()) + " spaces.";
-                if (next_square->get_powerup()!=Powerup::None){
-                    qDebug()<<"there's a powerup";
-                    qDebug()<<next_square->get_powerup();
-                    p->set_powerup(next_square->get_powerup());
-                }
-            } else  {
-                card_string += " card. There are none left so you have not moved.";
-            }
+            TakeTurn(next_square, current_square, card_string);
 
-            ui->drawCardLabel->setText(card_string.c_str());
-            CheckForWinner(next_square);
-
-            Powerup powup = p->get_powerup();
-
-            if (powup!=Powerup::None){
-                ui->powerup_button->setEnabled(true);
-                qDebug()<<"congrats, you have a powerup";
-
-                std::string pow_label = "Congrats, you have a powerup: " + Stringify(powup);
-                ui->label->setText(pow_label.c_str());
-                //ui->drawCardLabel_2->setText(c)
-            } else {
-                std::string pow_label = "Sorry, no powerup :(";
-                ui->label->setText(pow_label.c_str());
-            }
 
         } else if (powup == Powerup::PlusOne) {
             qDebug()<<"Plus one";
@@ -311,7 +279,13 @@ void BoardWindow::on_drawcard_button_clicked() {
 
     Square *current_square = p->get_location();
     Square *next_square = GetNextSquare(current_square, color_needed);
+    TakeTurn(next_square, current_square, card_string);
+}
+
+void BoardWindow::TakeTurn(Square * next_square, Square* current_square, std::string card_string){
     qDebug()<<"got the next square";
+    Player *p = players_[active_player_];
+
     if (next_square->get_id()!= -1){
         // then it's a valid square so move the player to that location
         scene->removeItem(p);
@@ -370,10 +344,10 @@ void BoardWindow::CheckForWinner(Square* next_square){
 
 Square* BoardWindow::GetNextSquare(Square* previous_square, QColor color_needed){ //gets the next square of the card's color
     int square_id = previous_square->get_id();
-    int ctr = square_id;
+    int ctr = square_id+1;
     for (ctr; ctr < squares_.size(); ctr++){
         if (squares_[ctr]->get_color() == color_needed){
-            return squares_[ctr+1];
+            return squares_[ctr];
         }
     }
     // else that means there are no squares of that color left
@@ -398,11 +372,6 @@ void BoardWindow::UpdateGraph(){
     view2->update();
 }
 
-
-
-void BoardWindow::TakeTurn(Player *p){
-
-}
 
 void BoardWindow::on_powLabel_linkActivated(const QString &link)
 {
