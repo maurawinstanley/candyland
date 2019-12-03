@@ -1,8 +1,6 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 #include "square.h"
-#include "directory.h"
-#include "datafile.h"
 #include <QColor>
 #include <QGraphicsItem>
 #include <cstdlib>

@@ -4,6 +4,12 @@
 #include "card.h"
 #include <QDebug>
 #include <string>
+#include <QThread>
+#include <QApplication>
+//players for wins for graph
+//Reset button to move players to the start
+//outlining squares wwith powerups / distinguishing them
+
 
 std::string Stringify(Powerup p){
     switch(p){
@@ -13,6 +19,8 @@ std::string Stringify(Powerup p){
             return "Plus one";
         case Powerup::Backward:
             return "Backward";
+        case Powerup::None:
+            return "None";
     }
 }
 
@@ -171,12 +179,7 @@ void BoardWindow::changeWindow()
 
 void BoardWindow::on_powerup_button_clicked() {
 
-    // set active to most recent player
-    if (active_player_ == 0) {
-        active_player_ = 3;
-    } else {
-        active_player_--;
-    }
+    ui->powerup_button->setEnabled(false);
     Player* p = players_[active_player_];
     Powerup powup = p->get_powerup();
 
@@ -226,12 +229,6 @@ void BoardWindow::on_powerup_button_clicked() {
 
     p->set_powerup(Powerup::None);
     ui->powerup_button->setEnabled(false);
-
-    if (active_player_ == 3) {
-        active_player_ = 0;
-    } else {
-        active_player_++;
-    }
 
     turn_string = "PLAYER " + std::to_string(active_player_ + 1) + ", it is your turn to draw a card.";
     ui->turnLabel->setText(turn_string.c_str());
@@ -287,13 +284,16 @@ void BoardWindow::MovePlayer(Square * next_square, Square* current_square){
     std::string move_string = "PLAYER " + std::to_string(active_player_+1) + " advanced ";
     if (next_square->get_id()!= -1){
         // then it's a valid square so move the player to that location
-        board_scene->removeItem(p);
-        p->set_location(next_square);
-        board_scene->addItem(p);
+        int current_id = current_square->get_id();
+        while (current_id <= next_square->get_id()) {
+            board_scene->removeItem(p);
+            p->set_location(squares_[current_id]);
+            board_scene->addItem(p);
+            //board_scene->update();
+            current_id++;
+        }
         move_string +=  std::to_string(next_square->get_id() - current_square->get_id()) + " spaces.";
         if (next_square->get_powerup()!=Powerup::None){
-//            qDebug()<<"there's a powerup";
-//            qDebug()<<next_square->get_powerup();
             p->set_powerup(next_square->get_powerup());
         }
     } else  {
@@ -304,20 +304,15 @@ void BoardWindow::MovePlayer(Square * next_square, Square* current_square){
 
     CheckForWinner(next_square);
 
-    Powerup powup = p->get_powerup();
+    Powerup powup;
+    std::string pow_label = "";
 
-    if (powup!=Powerup::None){
-        ui->powerup_button->setEnabled(true);
-        qDebug()<<"congrats, you have a powerup";
-
-        std::string pow_label = "Congrats, you have a powerup: " + Stringify(powup);
-        ui->label->setText(pow_label.c_str());
-        //ui->drawCardLabel_2->setText(c)
-    } else {
-        std::string pow_label = "Sorry, no powerup :(";
-        ui->label->setText(pow_label.c_str());
+    for (int i = 0; i < players_.size(); i++) {
+        qDebug()<<"in print players powup func";
+        powup = players_[i]->get_powerup();
+        pow_label += "Player " + std::to_string(i+1) + ": " + Stringify(powup) + "\n";
     }
-
+    ui->label->setText(pow_label.c_str());
 
 }
 
@@ -338,6 +333,12 @@ void BoardWindow::CheckForWinner(Square* next_square){
         }
         std::string turn_string = "PLAYER " + std::to_string(active_player_ + 1) + ", it is your turn to draw a card.";
         ui->turnLabel->setText(turn_string.c_str());
+
+        if (players_[active_player_]->get_powerup() != Powerup::None) {
+            ui->powerup_button->setEnabled(true);
+        } else {
+            ui->powerup_button->setEnabled(false);
+        }
     }
     UpdateGraph();
 }
@@ -381,4 +382,9 @@ void BoardWindow::on_powLabel_linkActivated(const QString &link)
 void BoardWindow::on_newgame_button_clicked()
 {
     popup->show();
+}
+
+void BoardWindow::on_reset_button_clicked()
+{
+
 }
