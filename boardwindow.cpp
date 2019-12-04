@@ -66,10 +66,21 @@ BoardWindow::~BoardWindow()
 
 void BoardWindow::NewGame(int num_humans){
 
+    num_humans_ = num_humans;
     active_player_ = 0;
     SetUpBoard();
     PlayerFactory pf;
     players_ = {};
+
+    // reset labels
+    std::string pow_label;
+    for (int i = 0; i < players_.size(); i++) {
+        pow_label += "Player " + std::to_string(i+1) + ": None\n";
+    }
+    ui->label->setText(pow_label.c_str());
+    ui->drawCardLabel->setText("");
+    ui->moveLabel->setText("");
+
 
     for (int i = 0; i < num_humans; i++){
         QIcon icon = player_icons_[i+1];
@@ -95,16 +106,9 @@ void BoardWindow::NewGame(int num_humans){
     ui->drawcard_button->setEnabled(true);
     std::string s = "PLAYER 1, it is your turn to draw a card.";
     ui->turnLabel->setText(s.c_str());
-
-
-
 }
+
 void BoardWindow::on_finish_clicked(){
-    /*for (int i = 0; i<4; i++){
-        Player *p = players_[i];
-        scene->removeItem(p);
-    }*/
-    qDebug()<<"finishe clicked";
     int num_players = popup->get_num_players();
     NewGame(num_players);
 }
@@ -265,6 +269,8 @@ void BoardWindow::on_drawcard_button_clicked() {
 
     ui->drawcard_button->setEnabled(false);
     ui->moveplayer_button->setEnabled(true);
+    std::string s = "PLAYER " + std::to_string(active_player_+1) + ", it is your turn to move.";
+    ui->turnLabel->setText(s.c_str());
 }
 
 void BoardWindow::on_moveplayer_button_clicked()
@@ -305,11 +311,13 @@ void BoardWindow::MovePlayer(Square * next_square, Square* current_square){
     CheckForWinner(next_square);
 
     Powerup powup;
-    std::string pow_label = "";
+    std::string pow_label = "Current PowerUps: \n";
 
     for (int i = 0; i < players_.size(); i++) {
-        qDebug()<<"in print players powup func";
         powup = players_[i]->get_powerup();
+//        if (i == active_player_) {
+//            pow_label += "<font color=\"blue\">Player " + std::to_string(i+1) + ": " + Stringify(powup) + "</font>\n";
+//        }
         pow_label += "Player " + std::to_string(i+1) + ": " + Stringify(powup) + "\n";
     }
     ui->label->setText(pow_label.c_str());
@@ -336,6 +344,9 @@ void BoardWindow::CheckForWinner(Square* next_square){
 
         if (players_[active_player_]->get_powerup() != Powerup::None) {
             ui->powerup_button->setEnabled(true);
+            QString tmp = ui->turnLabel->text();
+            tmp.append("\nYou may also apply your current power up.");
+            ui->turnLabel->setText(tmp);
         } else {
             ui->powerup_button->setEnabled(false);
         }
@@ -386,5 +397,9 @@ void BoardWindow::on_newgame_button_clicked()
 
 void BoardWindow::on_reset_button_clicked()
 {
-
+    for (int i = 0; i<4; i++){
+        Player *p = players_[i];
+        board_scene->removeItem(p);
+    }
+    NewGame(num_humans_);
 }

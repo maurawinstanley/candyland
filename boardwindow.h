@@ -46,6 +46,8 @@ private slots:
 
     void UpdateGraph();
 
+    void on_reset_button_clicked();
+
 signals:
     // for distance
     void powerupUsed();
@@ -67,6 +69,7 @@ private:
 
     std::vector<Player*> players_;
     std::vector<Square*> squares_;
+    int num_humans_;
     int active_player_;
     QMap<int, QIcon> player_icons_;
 
