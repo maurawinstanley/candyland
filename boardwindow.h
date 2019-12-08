@@ -18,7 +18,7 @@ public:
     explicit BoardWindow(QWidget *parent = nullptr);
     ~BoardWindow();
 
-    void NewGame(int num_players);
+    void NewGame(int num_players, std::vector<int> wins);
 
     void SetUpBoard();
 
@@ -28,6 +28,9 @@ public:
 
     void CheckForWinner(Square* next_square);
 
+    void MoveComputer();
+
+
 private slots:
 
     void on_finish_clicked();
@@ -35,8 +38,6 @@ private slots:
     void on_powerup_button_clicked();
 
     void on_drawcard_button_clicked();
-
-    void on_powLabel_linkActivated(const QString &link);
 
     void on_newgame_button_clicked();
 

@@ -6,10 +6,11 @@
 #include <string>
 #include <QThread>
 #include <QApplication>
-//players for wins for graph
-//Reset button to move players to the start
-//outlining squares wwith powerups / distinguishing them
+#include <QThread>
 
+//simulating game logic for computers - so that they just move and don't draw a card
+//labeling the start and end square
+//swapping a powerup
 
 std::string Stringify(Powerup p){
     switch(p){
@@ -64,7 +65,7 @@ BoardWindow::~BoardWindow()
     delete ui;
 }
 
-void BoardWindow::NewGame(int num_humans){
+void BoardWindow::NewGame(int num_humans, std::vector<int> wins){
 
     num_humans_ = num_humans;
     active_player_ = 0;
@@ -85,7 +86,7 @@ void BoardWindow::NewGame(int num_humans){
     for (int i = 0; i < num_humans; i++){
         QIcon icon = player_icons_[i+1];
 
-        Player* p = pf.createHuman(i+1, icon);
+        Player* p = pf.createHuman(i+1, icon, wins[i]);
         board_scene->addItem(p);
         p->set_location(squares_[0]);
         players_.push_back(p);
@@ -96,7 +97,7 @@ void BoardWindow::NewGame(int num_humans){
     if (num_cpu<4){
         for (num_cpu; num_cpu < 4; num_cpu++){
             QIcon icon = player_icons_[0];
-            Player* p = pf.createCpu(num_cpu+1, icon);
+            Player* p = pf.createCpu(num_cpu+1, icon, wins[num_cpu]);
             board_scene->addItem(p);
             p->set_location(squares_[0]);
             players_.push_back(p);
@@ -110,7 +111,7 @@ void BoardWindow::NewGame(int num_humans){
 
 void BoardWindow::on_finish_clicked(){
     int num_players = popup->get_num_players();
-    NewGame(num_players);
+    NewGame(num_players, {0,0,0,0});
 }
 
 void BoardWindow::SetUpBoard() {
@@ -209,8 +210,6 @@ void BoardWindow::on_powerup_button_clicked() {
             p->set_location(plus_one);
             board_scene->addItem(p);
             if (plus_one->get_powerup()!=Powerup::None){
-//                qDebug()<<"there's a powerup";
-//                qDebug()<<plus_one->get_powerup();
                 p->set_powerup(plus_one->get_powerup());
             }
 
@@ -224,8 +223,6 @@ void BoardWindow::on_powerup_button_clicked() {
             p->set_location(minus_one);
             board_scene->addItem(p);
             if (minus_one->get_powerup()){
-//                qDebug()<<"there's a powerup";
-//                qDebug()<<minus_one->get_powerup();
                 p->set_powerup(minus_one->get_powerup());
             }
         }
@@ -282,6 +279,8 @@ void BoardWindow::on_moveplayer_button_clicked()
     MovePlayer(next_square, current_square);
     ui->moveplayer_button->setEnabled(false);
     ui->drawcard_button->setEnabled(true);
+
+    CheckForWinner(next_square);
 }
 
 void BoardWindow::MovePlayer(Square * next_square, Square* current_square){
@@ -308,7 +307,7 @@ void BoardWindow::MovePlayer(Square * next_square, Square* current_square){
 
     ui->moveLabel->setText(move_string .c_str());
 
-    CheckForWinner(next_square);
+    //CheckForWinner(next_square);
 
     Powerup powup;
     std::string pow_label = "Current PowerUps: \n";
@@ -322,13 +321,14 @@ void BoardWindow::MovePlayer(Square * next_square, Square* current_square){
     }
     ui->label->setText(pow_label.c_str());
 
+//    CheckForWinner(next_square);
+
 }
 
 void BoardWindow::CheckForWinner(Square* next_square){
     // check for winner
     if (next_square == squares_[squares_.size()-1]){
-        ui->drawcard_button->setEnabled(false);
-        ui->powerup_button->setEnabled(false);
+
         std::string turn_string = "CONGRATIONS PLAYER " + std::to_string(active_player_ + 1) + ", YOU WIN! \n\n Click New Game to play again.";
         ui->turnLabel->setText(turn_string.c_str());
         players_[active_player_]->IncrementWins();
@@ -351,8 +351,107 @@ void BoardWindow::CheckForWinner(Square* next_square){
             ui->powerup_button->setEnabled(false);
         }
     }
+    Player *next_player = players_[active_player_];
+    if (next_player->get_humanity()==false){ //iz a computer
+
+        ui->drawcard_button->setEnabled(false);
+        ui->moveplayer_button->setEnabled(false);
+
+        MoveComputer();
+    }
+
     UpdateGraph();
 }
+
+void BoardWindow::MoveComputer(){
+    QThread::msleep(1000);
+    QColor color_needed;
+    std::string card_string = "PLAYER " + std::to_string(active_player_ + 1) + " drew a ";
+    qDebug()<<"iz a coputer";
+    Player* p = players_[active_player_];
+    qDebug()<<p->get_id();
+    qDebug()<<active_player_;
+    //on_drawcard_button_clicked();
+    //on_moveplayer_button_clicked();
+
+    Powerup powup = p->get_powerup();
+
+    std::string turn_string = "PLAYER " + std::to_string(active_player_ + 1) + ", it is your turn to powerup.";
+    ui->turnLabel->setText(turn_string.c_str());
+
+    //use the power up
+    if (powup==Powerup::None){
+        qDebug()<<"Sorry, no powerup currently available";
+    } else {
+        if (powup == Powerup::Double){
+            Square * current_square = p->get_location();
+            QColor color_needed = current_square->get_color();
+            Square *next_square = GetNextSquare(current_square, color_needed);
+            MovePlayer(next_square, current_square);
+
+        } else if (powup == Powerup::PlusOne) {
+            qDebug()<<"Plus one";
+            Square *current_square = p->get_location();
+            int curr_id = current_square->get_id();
+            Square *plus_one = squares_[curr_id+1];
+            board_scene->removeItem(p);
+            p->set_location(plus_one);
+            board_scene->addItem(p);
+            if (plus_one->get_powerup()!=Powerup::None){
+                p->set_powerup(plus_one->get_powerup());
+            }
+
+            CheckForWinner(plus_one);
+        } else { //its backward
+            qDebug()<<"backward";
+            Square *current_square = p->get_location();
+            int curr_id = current_square->get_id();
+            Square *minus_one = squares_[curr_id-1];
+            board_scene->removeItem(p);
+            p->set_location(minus_one);
+            board_scene->addItem(p);
+            if (minus_one->get_powerup()){
+                p->set_powerup(minus_one->get_powerup());
+            }
+        }
+    }
+
+    p->set_powerup(Powerup::None);
+
+
+
+    int num = rand() % 5;
+    if (num == 0){
+        card_string += "Blue";
+        color_needed = QColor(154, 239, 244);
+    } else if (num == 1){
+        card_string += "Green";
+        color_needed = QColor(154, 244, 204);
+    } else if (num == 2){
+        card_string += "Red";
+        color_needed = QColor(239, 115, 108);
+    } else if (num == 3){
+        card_string += "Yellow";
+        color_needed = QColor(239, 244, 154);
+    } else {
+        card_string += "Pink";
+        color_needed = QColor(244, 154, 194);
+    }
+    card_string += " card";
+    ui->drawCardLabel->setText(card_string.c_str());
+    card_scene->removeItem(current_card_);
+    current_card_= new Card(color_needed);
+    card_scene->addItem(current_card_);
+
+    Square *current_square = p->get_location();
+    Square *next_square = GetNextSquare(current_square, current_card_->get_color());
+    MovePlayer(next_square, current_square);
+
+    ui->drawcard_button->setEnabled(true);
+    CheckForWinner(next_square);
+
+}
+
 
 Square* BoardWindow::GetNextSquare(Square* previous_square, QColor color_needed){ //gets the next square of the card's color
     int square_id = previous_square->get_id();
@@ -375,19 +474,11 @@ void BoardWindow::UpdateGraph(){
 
         Player *p = players_[i];
         int wins = p->get_wins();
-        QGraphicsRectItem* item = new QGraphicsRectItem((i+1)*10,85,30, wins*10);
-        //QGraphicsRectItem* item2 = new QGraphicsRectItem(30,85,40, 40);
+        QGraphicsRectItem* item = new QGraphicsRectItem(i*35,130,25,-wins*10);
         graph_scene->addItem(item);
-        //graph_scene->addItem(item2);
     }
     graph_scene->update();
     graph_view->update();
-}
-
-
-void BoardWindow::on_powLabel_linkActivated(const QString &link)
-{
-
 }
 
 void BoardWindow::on_newgame_button_clicked()
@@ -397,9 +488,11 @@ void BoardWindow::on_newgame_button_clicked()
 
 void BoardWindow::on_reset_button_clicked()
 {
+    std::vector<int> wins = {};
     for (int i = 0; i<4; i++){
         Player *p = players_[i];
+        wins.push_back(p->get_wins());
         board_scene->removeItem(p);
     }
-    NewGame(num_humans_);
+    NewGame(num_humans_, wins);
 }

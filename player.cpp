@@ -1,13 +1,13 @@
 #include "player.h"
 
-Player::Player(int id, bool is_human, QIcon icon)
+Player::Player(int id, bool is_human, QIcon icon, int wins)
 {
     color_ = QColor(255,20,147);
     powerup_ = None;
     is_human_ = is_human;
     x_ = 675;
     y_ = 300;
-    wins_ = 0;
+    wins_ = wins;
     id_ = id;
     icon_ = icon;
     qDebug()<<"ID";
@@ -16,14 +16,14 @@ Player::Player(int id, bool is_human, QIcon icon)
 }
 
 
-Player* PlayerFactory::createCpu(int id, QIcon icon) {
-    Player* p = new Player(id, false, icon);
+Player* PlayerFactory::createCpu(int id, QIcon icon, int wins) {
+    Player* p = new Player(id, false, icon, wins);
     return p;
 }
 
 
-Player* PlayerFactory::createHuman(int id, QIcon icon) {
-    Player* p = new Player(id, true, icon);
+Player* PlayerFactory::createHuman(int id, QIcon icon, int wins) {
+    Player* p = new Player(id, true, icon, wins);
     return p;
 }
 

@@ -29,7 +29,7 @@ class Player: public QObject, public QGraphicsItem {
     Q_OBJECT
 
 public:
-    Player(int id, bool is_human, QIcon icon);
+    Player(int id, bool is_human, QIcon icon, int wins);
 
     void drawIcon(QPainter *painter, QPoint pos);
 
@@ -57,6 +57,7 @@ public:
 
     void DrawPlayer(QPainter *painter, int value);
 
+    bool get_humanity() { return is_human_;} ;
 
     QRectF boundingRect() const override;
 
@@ -110,9 +111,9 @@ class PlayerFactory {
 public:
 
 
-    static Player* createHuman(int id, QIcon icon);
+    static Player* createHuman(int id, QIcon icon, int wins);
 
-    static Player* createCpu(int id, QIcon icon);
+    static Player* createCpu(int id, QIcon icon, int wins);
 
 };
 

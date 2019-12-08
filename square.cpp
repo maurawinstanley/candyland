@@ -68,9 +68,15 @@ void Square::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QW
 
 
     QBrush b = painter->brush();
+    //QPen p = painter->pen();
     painter->setBrush(QBrush(color_));
+    if (get_powerup()!=Powerup::None){
+        QPen pen(Qt::white, 5);
+        painter->setPen(pen);
+    }
 
     painter->drawRect(QRect(this->x_, this->y_, this->width_, this->width_));
+    //painter->setPen(p);
     painter->setBrush(b);
 }
 
