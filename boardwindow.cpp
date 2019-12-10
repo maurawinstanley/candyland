@@ -94,15 +94,11 @@ BoardWindow::~BoardWindow()
 */
 void BoardWindow::NewGame(int num_humans, std::vector<int> wins){
 
-    // reset board and labels
+    // reset board and game
     SetUpBoard();
-
-    PlayerFactory pf;
-    players_ = {};
-
+    game_over_ = false;
 
     // reset labels
-
     std::string pow_label;
     for (int i = 0; i < players_.size(); i++) {
         pow_label += "Player " + std::to_string(i+1) + ": None\n";
@@ -115,6 +111,8 @@ void BoardWindow::NewGame(int num_humans, std::vector<int> wins){
     num_humans_ = num_humans;
     active_player_ = 0;
 
+    PlayerFactory pf;
+    players_ = {};
     for (int i = 0; i < num_humans; i++){
         QIcon icon = player_icons_[i+1];
 
@@ -147,6 +145,9 @@ void BoardWindow::NewGame(int num_humans, std::vector<int> wins){
 
 */
 void BoardWindow::SetUpBoard() {
+    for (int i = 0; i < squares_.size(); i++) {
+        board_scene->removeItem(squares_[i]);
+    }
     squares_ = {};
     power_squares_ = {};
     QColor color = QColor(255, 255, 255);
@@ -432,6 +433,7 @@ void BoardWindow::CheckForWinner(Square* next_square){
 
         // record win and exit
         players_[active_player_]->IncrementWins();
+        game_over_ = true;
         return;
 
     } else {
@@ -460,13 +462,16 @@ void BoardWindow::CheckForWinner(Square* next_square){
 
     // get next player
     Player *next_player = players_[active_player_];
-    if (next_player->get_humanity()==false){
+    if (next_player->get_humanity()==false && !game_over_){
         // if cpu, simulate turn automatically
         ui->drawcard_button->setEnabled(false);
         ui->moveplayer_button->setEnabled(false);
-        QTimer::singleShot(2000, this, SLOT(MoveComputer()));
-        //MoveComputer();
-        //timer_->stop();
+        QTimer::singleShot(200, this, SLOT(MoveComputer()));
+        if (next_player->get_location()->get_id() == squares_.size()-1) {
+            qDebug() << "we have a winner";
+            UpdateGraph();
+            return;
+        }
     }
 
     UpdateGraph();
@@ -480,7 +485,6 @@ void BoardWindow::MoveComputer(){
 
     QColor color_needed;
     std::string card_string = "PLAYER " + std::to_string(active_player_ + 1) + " drew a ";
-    qDebug()<<"iz a coputer";
     Player* p = players_[active_player_];
     qDebug()<<p->get_id();
     qDebug()<<active_player_;
@@ -492,9 +496,7 @@ void BoardWindow::MoveComputer(){
 
 
     //use the power up
-    if (powup==Powerup::None){
-        qDebug()<<"Sorry, no powerup currently available";
-    } else {
+    if (powup!=Powerup::None){
         if (powup == Powerup::Double){
             Square * current_square = p->get_location();
             QColor color_needed = current_square->get_color();

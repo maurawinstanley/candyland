@@ -77,6 +77,8 @@ private:
     int active_player_;
     QMap<int, QIcon> player_icons_;
 
+    bool game_over_;
+
 };
 
 #endif // BOARDWINDOW_H
