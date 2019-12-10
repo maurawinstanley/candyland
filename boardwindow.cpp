@@ -96,14 +96,13 @@ void BoardWindow::NewGame(int num_humans, std::vector<int> wins){
 
     // reset board and labels
     SetUpBoard();
-<<<<<<< HEAD
+
     PlayerFactory pf;
     players_ = {};
 
 
     // reset labels
-=======
->>>>>>> c3436e4d78844cd1526b1bcf1389d354ebe68679
+
     std::string pow_label;
     for (int i = 0; i < players_.size(); i++) {
         pow_label += "Player " + std::to_string(i+1) + ": None\n";
@@ -115,8 +114,7 @@ void BoardWindow::NewGame(int num_humans, std::vector<int> wins){
     // create human players
     num_humans_ = num_humans;
     active_player_ = 0;
-    PlayerFactory pf;
-    players_ = {};
+
     for (int i = 0; i < num_humans; i++){
         QIcon icon = player_icons_[i+1];
 
