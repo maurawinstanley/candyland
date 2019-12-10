@@ -2,6 +2,10 @@
 #include "ui_popupwindow.h"
 #include <QDebug>
 
+/**
+    Popup window constructor
+
+*/
 Popupwindow::Popupwindow(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::Popupwindow)
@@ -14,18 +18,27 @@ Popupwindow::Popupwindow(QWidget *parent) :
     ui->comboBox->addItem("4");
 }
 
+/**
+    Popup window destructor
+
+*/
 Popupwindow::~Popupwindow()
 {
     delete ui;
 }
 
+/**
+    Set number of players according to dropdown
 
+*/
 void Popupwindow::on_comboBox_currentIndexChanged(int index)
 {
     num_players_ = index;
-    qDebug()<<num_players_;
 }
 
+/**
+    Finished button clicked
+*/
 void Popupwindow::on_pushButton_clicked()
 {
     emit finish_clicked();
