@@ -71,7 +71,7 @@ void Square::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QW
     //QPen p = painter->pen();
     painter->setBrush(QBrush(color_));
     if (get_powerup()!=Powerup::None){
-        QPen pen(Qt::white, 5);
+        QPen pen(Qt::black, 5);
         painter->setPen(pen);
     }
 

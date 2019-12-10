@@ -28,10 +28,11 @@ public:
 
     void CheckForWinner(Square* next_square);
 
-    void MoveComputer();
+
 
 
 private slots:
+    void MoveComputer();
 
     void on_finish_clicked();
 
@@ -55,7 +56,7 @@ signals:
 
 private:
     Ui::BoardWindow *ui;
-
+    QTimer *timer_;
     QGraphicsScene *board_scene;
     QGraphicsScene *graph_scene;
     QGraphicsScene *card_scene;

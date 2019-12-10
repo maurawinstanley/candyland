@@ -6,7 +6,7 @@
 #include <string>
 #include <QThread>
 #include <QApplication>
-#include <QThread>
+#include <QTimer>
 
 //simulating game logic for computers - so that they just move and don't draw a card
 //labeling the start and end square
@@ -57,7 +57,9 @@ BoardWindow::BoardWindow(QWidget *parent) :
     player_icons_[3] = QIcon(":/Documents/prog_proj/in_class/images/candy3.svg");
     player_icons_[4] = QIcon(":/Documents/prog_proj/in_class/images/candy4.svg");
 
-
+    timer_ = new QTimer(this);
+    //connect(timer_, &QTimer::timeout, this, SLOT(MoveComputer()));
+    timer_->start(1000);
 }
 
 BoardWindow::~BoardWindow()
@@ -72,6 +74,7 @@ void BoardWindow::NewGame(int num_humans, std::vector<int> wins){
     SetUpBoard();
     PlayerFactory pf;
     players_ = {};
+
 
     // reset labels
     std::string pow_label;
@@ -356,15 +359,16 @@ void BoardWindow::CheckForWinner(Square* next_square){
 
         ui->drawcard_button->setEnabled(false);
         ui->moveplayer_button->setEnabled(false);
-
-        MoveComputer();
+        QTimer::singleShot(2000, this, SLOT(MoveComputer()));
+        //MoveComputer();
+        //timer_->stop();
     }
 
     UpdateGraph();
 }
 
 void BoardWindow::MoveComputer(){
-    QThread::msleep(1000);
+    qDebug()<<"herrrrrr";
     QColor color_needed;
     std::string card_string = "PLAYER " + std::to_string(active_player_ + 1) + " drew a ";
     qDebug()<<"iz a coputer";
@@ -412,6 +416,7 @@ void BoardWindow::MoveComputer(){
             board_scene->addItem(p);
             if (minus_one->get_powerup()){
                 p->set_powerup(minus_one->get_powerup());
+
             }
         }
     }
@@ -445,10 +450,13 @@ void BoardWindow::MoveComputer(){
 
     Square *current_square = p->get_location();
     Square *next_square = GetNextSquare(current_square, current_card_->get_color());
+    //QThread::msleep(1000);
     MovePlayer(next_square, current_square);
 
     ui->drawcard_button->setEnabled(true);
     CheckForWinner(next_square);
+
+
 
 }
 
