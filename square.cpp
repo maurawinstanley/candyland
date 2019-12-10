@@ -78,8 +78,10 @@ void Square::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QW
 
     QBrush b = painter->brush();
     painter->setBrush(QBrush(color_));
+
+    // outline power squares in bold
     if (get_powerup()!=Powerup::None){
-        QPen pen(Qt::black, 5);
+        QPen pen(Qt::black, 2.5);
         painter->setPen(pen);
     }
 

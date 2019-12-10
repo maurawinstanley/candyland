@@ -29,9 +29,10 @@ public:
     void CheckForWinner(Square* next_square);
 
 
-
-
 private slots:
+
+    void StepForward();
+
     void MoveComputer();
 
     void on_finish_clicked();
@@ -71,6 +72,7 @@ private:
 
     std::vector<Player*> players_;
     std::vector<Square*> squares_;
+    std::vector<Square*> power_squares_;
     int num_humans_;
     int active_player_;
     QMap<int, QIcon> player_icons_;

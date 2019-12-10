@@ -148,6 +148,7 @@ void BoardWindow::NewGame(int num_humans, std::vector<int> wins){
 */
 void BoardWindow::SetUpBoard() {
     squares_ = {};
+    power_squares_ = {};
     QColor color = QColor(255, 255, 255);
     Square *s;
     int counter = 0;
@@ -156,11 +157,12 @@ void BoardWindow::SetUpBoard() {
     for (int x = 0; x < 10; x++) {
         if (rand() % 100 < 12) {
             s = new PowerSquare(x*Square::get_width(), 0, counter);
+            power_squares_.push_back(s);
         } else {
             s = new Square(x*Square::get_width(), 0, counter);
+            board_scene->addItem(s);
         }
         counter++;
-        board_scene->addItem(s);
         squares_.push_back(s);
     }
 
@@ -173,11 +175,12 @@ void BoardWindow::SetUpBoard() {
     for (int x = 9; x >= 0; x--) {
         if (rand() % 100 < 12) {
              s = new PowerSquare(x*Square::get_width(), 2*Square::get_width(), counter);
+             power_squares_.push_back(s);
         } else {
             s = new Square(x*Square::get_width(), 2*Square::get_width(), counter);
+            board_scene->addItem(s);
         }
         counter++;
-        board_scene->addItem(s);
         squares_.push_back(s);
     }
 
@@ -190,12 +193,18 @@ void BoardWindow::SetUpBoard() {
     for (int x = 0; x < 10; x++) {
         if (rand() % 100 < 12) {
              s = new PowerSquare(x*Square::get_width(), 4*Square::get_width(), counter);
+             power_squares_.push_back(s);
         } else {
             s = new Square(x*Square::get_width(), 4*Square::get_width(), counter);
+            board_scene->addItem(s);
         }
         counter++;
-        board_scene->addItem(s);
+
         squares_.push_back(s);
+    }
+
+    for (int i = 0; i < power_squares_.size(); i++) {
+        board_scene->addItem(power_squares_[i]);
     }
 }
 
@@ -343,6 +352,16 @@ void BoardWindow::on_moveplayer_button_clicked()
     CheckForWinner(next_square);
 }
 
+void BoardWindow::StepForward(){
+    Player* p = players_[active_player_-1];
+    qDebug() << "active: " << active_player_-1;
+    int next_id = p->get_location()->get_id() + 1;
+    qDebug() << "current_square: " << next_id;
+    board_scene->removeItem(p);
+    p->set_location(squares_[next_id]);
+    board_scene->addItem(p);
+}
+
 /**
     Attempt to move the current player to another square.
 
@@ -359,15 +378,9 @@ void BoardWindow::MovePlayer(Square * next_square, Square* current_square){
     // check if next square exists
     if (next_square->get_id()!= -1){
         // valid square so move the player to that location
-        int current_id = current_square->get_id();
-
-        // TODO: simulate movement over individual squares
-        while (current_id <= next_square->get_id()) {
-            board_scene->removeItem(p);
-            p->set_location(squares_[current_id]);
-            board_scene->addItem(p);
-            current_id++;
-        }
+        board_scene->removeItem(p);
+        p->set_location(next_square);
+        board_scene->addItem(p);
 
         // calculate distance travelled
         move_string +=  std::to_string(next_square->get_id() - current_square->get_id()) + " spaces.";
@@ -465,8 +478,6 @@ void BoardWindow::CheckForWinner(Square* next_square){
 */
 void BoardWindow::MoveComputer(){
 
-    qDebug()<<"herrrrrr";
-
     QColor color_needed;
     std::string card_string = "PLAYER " + std::to_string(active_player_ + 1) + " drew a ";
     qDebug()<<"iz a coputer";
@@ -478,6 +489,7 @@ void BoardWindow::MoveComputer(){
 
     std::string turn_string = "PLAYER " + std::to_string(active_player_ + 1) + ", it is your turn to powerup.";
     ui->turnLabel->setText(turn_string.c_str());
+
 
     //use the power up
     if (powup==Powerup::None){
@@ -544,14 +556,10 @@ void BoardWindow::MoveComputer(){
 
     Square *current_square = p->get_location();
     Square *next_square = GetNextSquare(current_square, current_card_->get_color());
-    //QThread::msleep(1000);
     MovePlayer(next_square, current_square);
 
     ui->drawcard_button->setEnabled(true);
     CheckForWinner(next_square);
-
-
-
 }
 
 /**
