@@ -1,7 +1,12 @@
 #include "square.h"
 
+/**
+   Square constructor
+
+*/
 Square::Square(const int x, const int y, int id)
 {
+    // set color based on position on board
     int color_num = id % 5;
     switch (color_num) {
         case 0:
@@ -27,8 +32,11 @@ Square::Square(const int x, const int y, int id)
     id_ = id;
 }
 
+/**
+    PowerSquare constructor
+*/
 PowerSquare::PowerSquare(const int x, const int y, int id) : Square(x, y, id) {
-    qDebug() << "making a powerSquare at " << id;
+    // randomly assign type of powerup
     int num = rand() % 3;
     switch (num) {
         case 0:
@@ -42,8 +50,9 @@ PowerSquare::PowerSquare(const int x, const int y, int id) : Square(x, y, id) {
             break;
     }
 }
+
 /**
-    basic func to create rect of ell
+    basic func to create rect
     @return void
 */
 QRectF Square::boundingRect() const
@@ -68,7 +77,6 @@ void Square::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QW
 
 
     QBrush b = painter->brush();
-    //QPen p = painter->pen();
     painter->setBrush(QBrush(color_));
     if (get_powerup()!=Powerup::None){
         QPen pen(Qt::white, 5);
@@ -76,19 +84,16 @@ void Square::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QW
     }
 
     painter->drawRect(QRect(this->x_, this->y_, this->width_, this->width_));
-    //painter->setPen(p);
     painter->setBrush(b);
 }
 
 
 /**
-    signal to signify that the cell was clicked
+    signal to signify that the square was clicked
     @return void
 */
 void Square::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
-    // update this QGraphicsItem (force it to re-draw)
-    //update();
     emit SquareSelected(this);
 }
 
@@ -100,15 +105,11 @@ bool operator==(const Square &first, const Square &other) {
 }
 
 
-
-
 std::pair<int, int>Square:: get_location(){
     std::pair<int, int> ret;
     ret.first = x_;
     ret.second = y_;
     return ret;
-
-
 }
 
 

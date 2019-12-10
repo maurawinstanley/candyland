@@ -1,5 +1,9 @@
 #include "player.h"
 
+/**
+    Player constructor
+
+*/
 Player::Player(int id, bool is_human, QIcon icon, int wins)
 {
     color_ = QColor(255,20,147);
@@ -16,12 +20,19 @@ Player::Player(int id, bool is_human, QIcon icon, int wins)
 }
 
 
+/**
+    CPU factory
+
+*/
 Player* PlayerFactory::createCpu(int id, QIcon icon, int wins) {
     Player* p = new Player(id, false, icon, wins);
     return p;
 }
 
+/**
+    Human factory
 
+*/
 Player* PlayerFactory::createHuman(int id, QIcon icon, int wins) {
     Player* p = new Player(id, true, icon, wins);
     return p;
