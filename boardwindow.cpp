@@ -124,14 +124,16 @@ void BoardWindow::NewGame(int num_humans, std::vector<int> wins){
     }
 
     // create computers
-    int num_cpu = 4 - num_humans;
-    for (int i = 0; i < num_cpu; i++){
-        QIcon icon = player_icons_[0];
-        Player* p = pf.createCpu(num_cpu+1, icon, wins[num_cpu]);
-        board_scene->addItem(p);
-        p->set_location(squares_[0]);
-        players_.push_back(p);
-        qDebug()<<"new cpu";
+    int num_cpu = num_humans;
+   if (num_cpu<4){
+       for (num_cpu; num_cpu < 4; num_cpu++){
+           QIcon icon = player_icons_[0];
+           Player* p = pf.createCpu(num_cpu+1, icon, wins[num_cpu]);
+           board_scene->addItem(p);
+           p->set_location(squares_[0]);
+           players_.push_back(p);
+           qDebug()<<"new cpu";
+       }
     }
 
     // enable draw card button and prompt player 1
