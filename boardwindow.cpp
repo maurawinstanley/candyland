@@ -464,10 +464,9 @@ void BoardWindow::CheckForWinner(Square* next_square){
 
 */
 void BoardWindow::MoveComputer(){
-<<<<<<< HEAD
+
     qDebug()<<"herrrrrr";
-=======
->>>>>>> c3436e4d78844cd1526b1bcf1389d354ebe68679
+
     QColor color_needed;
     std::string card_string = "PLAYER " + std::to_string(active_player_ + 1) + " drew a ";
     qDebug()<<"iz a coputer";
