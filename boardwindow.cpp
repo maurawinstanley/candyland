@@ -447,7 +447,7 @@ void BoardWindow::CheckForWinner(Square* next_square){
         ui->turnLabel->setText(turn_string.c_str());
 
         // check if player has a power up
-        if (players_[active_player_]->get_powerup() != Powerup::None) {
+        if (players_[active_player_]->get_powerup() != Powerup::None && players_[active_player_]->get_humanity()) {
             // enable and offer them to use it
             ui->powerup_button->setEnabled(true);
             QString tmp = ui->turnLabel->text();
@@ -470,7 +470,6 @@ void BoardWindow::CheckForWinner(Square* next_square){
         if (next_player->get_location()->get_id() == squares_.size()-1) {
             qDebug() << "we have a winner";
             UpdateGraph();
-            return;
         }
     }
 
