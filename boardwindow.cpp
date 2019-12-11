@@ -471,11 +471,8 @@ void BoardWindow::CheckForWinner(Square* next_square){
 */
 void BoardWindow::MoveComputer(){
 
-    QColor color_needed;
     std::string card_string = "PLAYER " + std::to_string(active_player_ + 1) + " drew a ";
     Player* p = players_[active_player_];
-    qDebug()<<p->get_id();
-    qDebug()<<active_player_;
 
     Powerup powup = p->get_powerup();
 
@@ -521,6 +518,8 @@ void BoardWindow::MoveComputer(){
 
     p->set_powerup(Powerup::None);
 
+    // draw a random card
+    QColor color_needed;
     int num = rand() % 5;
     if (num == 0){
         card_string += "Blue";
@@ -544,6 +543,7 @@ void BoardWindow::MoveComputer(){
     current_card_= new Card(color_needed);
     card_scene->addItem(current_card_);
 
+    // move the player
     Square *current_square = p->get_location();
     Square *next_square = GetNextSquare(current_square, current_card_->get_color());
     MovePlayer(next_square, current_square);
