@@ -158,7 +158,7 @@ void BoardWindow::SetUpBoard() {
 
     // top row
     for (int x = 0; x < 10; x++) {
-        if (rand() % 100 < 12) {
+        if (rand() % 100 < 12 && x != 0) {
             s = new PowerSquare(x*Square::get_width(), 0, counter);
             power_squares_.push_back(s);
         } else {
@@ -194,7 +194,7 @@ void BoardWindow::SetUpBoard() {
 
     // bottom row
     for (int x = 0; x < 10; x++) {
-        if (rand() % 100 < 12) {
+        if (rand() % 100 < 12 && x != 9) {
              s = new PowerSquare(x*Square::get_width(), 4*Square::get_width(), counter);
              power_squares_.push_back(s);
         } else {
@@ -355,16 +355,6 @@ void BoardWindow::on_moveplayer_button_clicked()
     CheckForWinner(next_square);
 }
 
-void BoardWindow::StepForward(){
-    Player* p = players_[active_player_-1];
-    qDebug() << "active: " << active_player_-1;
-    int next_id = p->get_location()->get_id() + 1;
-    qDebug() << "current_square: " << next_id;
-    board_scene->removeItem(p);
-    p->set_location(squares_[next_id]);
-    board_scene->addItem(p);
-}
-
 /**
     Attempt to move the current player to another square.
 
@@ -406,10 +396,6 @@ void BoardWindow::MovePlayer(Square * next_square, Square* current_square){
     std::string pow_label = "Current PowerUps: \n";
     for (int i = 0; i < players_.size(); i++) {
         powup = players_[i]->get_powerup();
-        // TODO: make active players power up a different color/style?
-//        if (i == active_player_) {
-//            pow_label += "<font color=\"blue\">Player " + std::to_string(i+1) + ": " + Stringify(powup) + "</font>\n";
-//        }
         pow_label += "Player " + std::to_string(i+1) + ": " + Stringify(powup) + "\n";
     }
     ui->label->setText(pow_label.c_str());

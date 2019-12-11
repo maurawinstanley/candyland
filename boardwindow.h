@@ -31,8 +31,6 @@ public:
 
 private slots:
 
-    void StepForward();
-
     void MoveComputer();
 
     void on_finish_clicked();
