@@ -76,6 +76,9 @@ void Player::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QW
     //QIcon icon = QIcon(":/Documents/prog_proj/in_class/images/candy1.svg");
     QRect rect = QRect(x_ +offset_, y_ +offset_, width_, width_);
     icon_.paint(painter, rect, Qt::AlignCenter);
+    std::string id = std::to_string(id_);
+    painter->setPen(Qt::black);
+    painter->drawText(rect, Qt::AlignLeading, QString::fromStdString(id));
 
 }
 

@@ -296,7 +296,7 @@ void BoardWindow::on_drawcard_button_clicked() {
 
     QColor color_needed;
     std::string card_string = "PLAYER " + std::to_string(active_player_ + 1) + " drew a ";
-
+    qDebug()<<"here";
     // get a random number correlated to the colors on the board
     int num = rand() % 5;
     if (num == 0){
@@ -315,17 +315,17 @@ void BoardWindow::on_drawcard_button_clicked() {
         card_string += "Pink";
         color_needed = QColor(244, 154, 194);
     }
-
+    qDebug()<<"here2";
     card_string += " card";
 
     // update the card label
     ui->drawCardLabel->setText(card_string.c_str());
-
+    //Card
     // update the card view
-    card_scene->removeItem(current_card_);
+    //card_scene->removeItem(current_card_);
     current_card_= new Card(color_needed);
     card_scene->addItem(current_card_);
-
+    qDebug()<<"here3";
     // prompt the player to move by disabling draw card button and enabling move player button
     ui->drawcard_button->setEnabled(false);
     ui->moveplayer_button->setEnabled(true);
@@ -436,6 +436,7 @@ void BoardWindow::CheckForWinner(Square* next_square){
         // record win and exit
         players_[active_player_]->IncrementWins();
         game_over_ = true;
+        UpdateGraph();
         return;
 
     } else {
@@ -468,7 +469,7 @@ void BoardWindow::CheckForWinner(Square* next_square){
         // if cpu, simulate turn automatically
         ui->drawcard_button->setEnabled(false);
         ui->moveplayer_button->setEnabled(false);
-        QTimer::singleShot(200, this, SLOT(MoveComputer()));
+        QTimer::singleShot(400, this, SLOT(MoveComputer()));
         if (next_player->get_location()->get_id() == squares_.size()-1) {
             qDebug() << "we have a winner";
             UpdateGraph();

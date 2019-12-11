@@ -55,6 +55,8 @@ signals:
     // for distance
     void powerupUsed();
 
+    void finish_clicked();
+
 private:
     Ui::BoardWindow *ui;
     QTimer *timer_;
